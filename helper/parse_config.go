@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-func New(path string) *config.Config {
+func ParseConfig(path string) *config.Config {
 	if _, err := os.Stat(path); err != nil {
 		log.Fatal(err)
 	}
@@ -17,7 +17,13 @@ func New(path string) *config.Config {
 	viper.AutomaticEnv()
 
 	config := &config.Config{}
-	err := viper.Unmarshal(&config)
+
+	err := viper.ReadInConfig()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = viper.Unmarshal(&config)
 	if err != nil {
 		log.Fatal(err)
 	}
