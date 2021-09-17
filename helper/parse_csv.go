@@ -27,3 +27,32 @@ func LoadCustomer(path string) []*models.Customer {
 
 	return result
 }
+
+func WriteCustomer(path string, customers []*models.Customer) {
+
+	// Filter customer that doesn't have email
+	var errData []*models.Customer
+	for _, cus := range customers {
+		if cus.Email == "" {
+			errData = append(errData, cus)
+		}
+	}
+
+	// Marshal customer to write to file
+	data, err := csvutil.Marshal(&errData)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// if the output file does not exist, create the file
+	file, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE, 0666)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+
+	_, err = file.Write(data)
+	if err != nil {
+		log.Fatal(err)
+	}
+}

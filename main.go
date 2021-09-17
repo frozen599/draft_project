@@ -9,5 +9,5 @@ func main() {
 	fmt.Println(config.EmailTemplatePath) */
 
 	customers := helper.LoadCustomer("./data/customers.csv")
-	helper.Process("./templates/email_template.json", "./output_emails/output_emails.json", customers)
+	helper.Process("./templates/email_template.json", "./output_emails/output_emails.json", "./errors/err_data.csv", customers)
 }

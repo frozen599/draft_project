@@ -1,12 +1,11 @@
 package helper
 
 import (
+	"encoding/json"
 	"fmt"
-
-	jsoniter "github.com/json-iterator/go"
 )
 
 func PrintJSON(in interface{}) {
-	data, _ := jsoniter.MarshalIndent(in, " ", "    ")
-	fmt.Println(data)
+	data, _ := json.MarshalIndent(in, "", " ")
+	fmt.Println(string(data))
 }

@@ -2,7 +2,6 @@ package helper
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"os"
 	"strings"
@@ -46,7 +45,30 @@ func ProcessEmailPerCustomer(path string, customer *models.Customer, ch chan mod
 	}
 }
 
-func Process(templatePath, outPath string, customers []*models.Customer) {
+func DoWriteOutput(path string, result []models.EmailTemplate) {
+	// Marshal json and then write to output file
+	data, err := json.MarshalIndent(&result, "", " ")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// if the output file does not exist, create the file
+	file, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE, 0666)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+
+	//
+	written := strings.ReplaceAll(string(data), "\\u003c", "<")
+	_, err = file.WriteString(written)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+}
+
+func Process(templatePath, outputPath, errPath string, customers []*models.Customer) {
 	ch := make(chan models.EmailTemplate)
 
 	go func() {
@@ -58,28 +80,10 @@ func Process(templatePath, outPath string, customers []*models.Customer) {
 
 	var result []models.EmailTemplate
 	for tmpl := range ch {
-		fmt.Println(tmpl.Subject, tmpl.Body, tmpl.From)
 		result = append(result, tmpl)
 	}
 
-	// Marshal json and then write to output file
-	data, err := json.MarshalIndent(&result, "", " ")
-	if err != nil {
-		log.Fatal(err)
-	}
+	DoWriteOutput(outputPath, result)
 
-	// if the output file does not exist, create the file
-	file, err := os.OpenFile(outPath, os.O_RDWR|os.O_CREATE, 0666)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer file.Close()
-
-	//
-	written := strings.ReplaceAll(string(data), "\\u003c", "<")
-	fmt.Println(written)
-	_, err = file.WriteString(written)
-	if err != nil {
-		log.Fatal(err)
-	}
+	WriteCustomer(errPath, customers)
 }
