@@ -18,6 +18,3 @@ func TestLoadCustomer(t *testing.T) {
 	assert.NotNil(t, customers)
 	helper.PrintJSON(customers)
 }
-
-func TestSendMail(t *testing.T) {
-}
