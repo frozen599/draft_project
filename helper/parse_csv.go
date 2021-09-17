@@ -28,7 +28,7 @@ func LoadCustomer(path string) []*models.Customer {
 	return result
 }
 
-func WriteCustomer(path string, customers []*models.Customer) {
+func WriteErrCustomer(path string, customers []*models.Customer) {
 
 	// Filter customer that doesn't have email
 	var errData []*models.Customer

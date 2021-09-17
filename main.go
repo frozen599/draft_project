@@ -5,9 +5,9 @@ import (
 )
 
 func main() {
-	/* config := helper.ParseConfig(".env")
-	fmt.Println(config.EmailTemplatePath) */
-
+	config := helper.ParseConfig(".env")
+	helper.PrintJSON(config)
 	customers := helper.LoadCustomer("./data/customers.csv")
-	helper.Process("./templates/email_template.json", "./output_emails/output_emails.json", "./errors/err_data.csv", customers)
+	helper.PrintJSON(customers)
+	helper.DoProcess(false, config, customers)
 }

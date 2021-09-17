@@ -5,8 +5,10 @@ import (
 	"log"
 	"os"
 	"strings"
+	"sync"
 	"time"
 
+	"github.com/gopher5889/interview/config"
 	"github.com/gopher5889/interview/models"
 )
 
@@ -20,7 +22,7 @@ func substituteStr(body, title, firstName, lastName string) string {
 	return result
 }
 
-func ProcessEmailPerCustomer(path string, customer *models.Customer, ch chan models.EmailTemplate) {
+func ProcessEmailPerCustomer(path string, customer *models.Customer, ch chan models.Email) {
 	// Check if path to email_template.json exists
 	if _, err := os.Stat(path); err != nil {
 		log.Fatal(err)
@@ -41,11 +43,12 @@ func ProcessEmailPerCustomer(path string, customer *models.Customer, ch chan mod
 	if customer.Email != "" {
 		newBody := substituteStr(template.Body, customer.Title, customer.FirstName, customer.LastName)
 		template.Body = newBody
-		ch <- template
+		email := models.Email{Template: &template, To: customer.Email}
+		ch <- email
 	}
 }
 
-func DoWriteOutput(path string, result []models.EmailTemplate) {
+func DoWriteOutput(path string, result []models.Email) {
 	// Marshal json and then write to output file
 	data, err := json.MarshalIndent(&result, "", " ")
 	if err != nil {
@@ -68,22 +71,35 @@ func DoWriteOutput(path string, result []models.EmailTemplate) {
 
 }
 
-func Process(templatePath, outputPath, errPath string, customers []*models.Customer) {
-	ch := make(chan models.EmailTemplate)
+func DoProcess(sendMail bool, config *config.Config, customers []*models.Customer) {
+	ch := make(chan models.Email)
 
 	go func() {
 		for _, cus := range customers {
-			ProcessEmailPerCustomer(templatePath, cus, ch)
+			ProcessEmailPerCustomer(config.EmailTemplatePath, cus, ch)
 		}
 		close(ch)
 	}()
 
-	var result []models.EmailTemplate
+	var result []models.Email
 	for tmpl := range ch {
 		result = append(result, tmpl)
 	}
 
-	DoWriteOutput(outputPath, result)
+	if !sendMail {
+		DoWriteOutput(config.OutputEmailPath, result)
+	} else {
+		if config.SmtpHost == "" || config.SmtpPort == "" || config.Password == "" {
+			log.Fatal("SendMail config vars must be set")
+		}
 
-	WriteCustomer(errPath, customers)
+		var wg sync.WaitGroup
+		for _, email := range result {
+			wg.Add(1)
+			go DoSendMail(email.Template.From, email.To, email.Template.Body, config, &wg)
+		}
+		wg.Wait()
+	}
+
+	WriteErrCustomer(config.ErrorPath, customers)
 }

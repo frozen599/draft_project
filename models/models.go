@@ -13,3 +13,8 @@ type EmailTemplate struct {
 	MimeType string `json:"mimeType,omitempty"`
 	Body     string `json:"body,omitempty"`
 }
+
+type Email struct {
+	Template *EmailTemplate `json:"template"`
+	To       string         `json:"to"`
+}
