@@ -1,6 +1,8 @@
 package tests
 
 import (
+	"fmt"
+	"path"
 	"sync"
 	"testing"
 
@@ -8,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestFoo(t *testing.T) {
+func TestLoadConfig(t *testing.T) {
 	config := helper.ParseConfig("../.env")
 	assert.NotEmpty(t, config)
 	helper.PrintJSON(config)
@@ -32,4 +34,20 @@ func TestSendMail(t *testing.T) {
 		go helper.DoSendMail(from, r, "Test Message", config, &wg)
 	}
 	wg.Wait()
+}
+
+func TestProcess(t *testing.T) {
+	config := helper.ParseConfig("../.env")
+	assert.NotNil(t, config)
+
+	customers := helper.LoadCustomer("../data/customers.csv")
+	assert.NotNil(t, customers)
+	helper.DoProcess(false, config, customers)
+}
+
+func TestFoo(t *testing.T) {
+	arbitaryPath := "../output_emails//"
+	result := path.Join(arbitaryPath, "emails.json")
+	assert.NotEmpty(t, result)
+	fmt.Println(result)
 }

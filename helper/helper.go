@@ -22,14 +22,14 @@ func substituteStr(body, title, firstName, lastName string) string {
 	return result
 }
 
-func ProcessEmailPerCustomer(path string, customer *models.Customer, ch chan models.Email) {
+func ProcessEmailPerCustomer(templatePath string, customer *models.Customer, ch chan models.Email) {
 	// Check if path to email_template.json exists
-	if _, err := os.Stat(path); err != nil {
+	if _, err := os.Stat(templatePath); err != nil {
 		log.Fatal(err)
 	}
 
 	// Read template file then unmarshal it to EmailTemplate
-	bytes, err := os.ReadFile(path)
+	bytes, err := os.ReadFile(templatePath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -48,7 +48,7 @@ func ProcessEmailPerCustomer(path string, customer *models.Customer, ch chan mod
 	}
 }
 
-func DoWriteOutput(path string, result []models.Email) {
+func DoWriteOutput(outputPath string, result []models.Email) {
 	// Marshal json and then write to output file
 	data, err := json.MarshalIndent(&result, "", " ")
 	if err != nil {
@@ -56,13 +56,13 @@ func DoWriteOutput(path string, result []models.Email) {
 	}
 
 	// if the output file does not exist, create the file
-	file, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE, 0666)
+	file, err := os.OpenFile(outputPath, os.O_RDWR|os.O_CREATE, 0666)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer file.Close()
 
-	//
+	// Because the "<" is chaned to \u003c during serialization
 	written := strings.ReplaceAll(string(data), "\\u003c", "<")
 	_, err = file.WriteString(written)
 	if err != nil {
@@ -78,10 +78,12 @@ func DoProcess(sendMail bool, config *config.Config, customers []*models.Custome
 		for _, cus := range customers {
 			ProcessEmailPerCustomer(config.EmailTemplatePath, cus, ch)
 		}
+		// signal that no more data will be sent through the channel
 		close(ch)
 	}()
 
 	var result []models.Email
+	// Loop until the channel is closed, this is a pipeline model
 	for tmpl := range ch {
 		result = append(result, tmpl)
 	}

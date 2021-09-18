@@ -4,7 +4,7 @@
    "from": "The Marketing Team<marketing@example.com",
    "subject": "A new product is being launched soon...",
    "mimeType": "text/plain",
-   "body": "Hi Mr John Doe,\nToday, September 17, 2021, we would like to tell you that... Sincerely,\nThe Marketing Team"
+   "body": "Hi Mr John Doe,\nToday, September 18, 2021, we would like to tell you that... Sincerely,\nThe Marketing Team"
   },
   "to": "john.smith@example.com"
  },
@@ -13,7 +13,7 @@
    "from": "The Marketing Team<marketing@example.com",
    "subject": "A new product is being launched soon...",
    "mimeType": "text/plain",
-   "body": "Hi Mrs Michelle Smith,\nToday, September 17, 2021, we would like to tell you that... Sincerely,\nThe Marketing Team"
+   "body": "Hi Mrs Michelle Smith,\nToday, September 18, 2021, we would like to tell you that... Sincerely,\nThe Marketing Team"
   },
   "to": "michelle.smith@example.com"
  }
