@@ -4,9 +4,9 @@
 - Docker
 
 ### Run
-$ git clone https://github.com/gopher5889/interview.git
-$ cd interview
-$ docker build -t gopher .
+$ git clone https://github.com/gopher5889/interview.git\
+$ cd interview\
+$ docker build -t gopher .\
 $ docker run --name container_name gopher:latest ./interview /path/to/email_template.json /path/to/customers.csv /path/to/output_emails/ /path/to/errors.csv
 
 
