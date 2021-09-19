@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"os"
 
 	"github.com/gopher5889/interview/config"
@@ -8,6 +9,10 @@ import (
 )
 
 func main() {
+	if len(os.Args) != 5 {
+		log.Fatal("Wrong number of arguments")
+	}
+
 	config := config.NewConfig(os.Args[1], os.Args[2], os.Args[3], os.Args[4])
 	helper.PrintJSON(config)
 	customers := helper.LoadCustomer(config.CustomerDataFilePath)
