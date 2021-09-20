@@ -15,6 +15,7 @@ func main() {
 		log.Fatal("Wrong number of arguments")
 	}
 
+	// You can also set env variables in the .env file and use helper.ParseConfig("/path/to/.env")
 	config := config.NewConfig(os.Args[1], os.Args[2], os.Args[3], os.Args[4])
 	helper.PrintJSON(config)
 	customers := helper.LoadCustomer(config.CustomerDataFilePath)
