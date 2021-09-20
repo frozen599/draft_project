@@ -9,6 +9,8 @@ import (
 )
 
 func main() {
+	// You should run the application with syntax as follow:
+	// go run main.go /path/to/email_template.json /path/to/customers.csv /path/to/output_emails /path/to/errors.csv
 	if len(os.Args) != 5 {
 		log.Fatal("Wrong number of arguments")
 	}
