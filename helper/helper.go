@@ -50,7 +50,12 @@ func ProcessEmailPerCustomer(templatePath string, customer *models.Customer, ch 
 
 func DoWriteOutput(outputPath string, result []models.Email) {
 	// Marshal json and then write to output file
-	data, err := json.MarshalIndent(&result, "", " ")
+	var temp []models.EmailTemplate
+	for _, email := range result {
+		temp = append(temp, *email.Template)
+	}
+
+	data, err := json.MarshalIndent(&temp, "", " ")
 	if err != nil {
 		log.Fatal(err)
 	}
