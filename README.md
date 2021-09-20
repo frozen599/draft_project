@@ -10,4 +10,4 @@ $ go run main.go /path/to/email_template.json /path/to/customers.csv /path/to/ou
 
 
 ### Trivia
-This project is written in Go version 1.17.1 in Fedora 34
+This project is written in Go version 1.17.1 on Fedora 34
